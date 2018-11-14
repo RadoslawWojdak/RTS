@@ -48,9 +48,6 @@ class Unit
 public:
     Unit();
 
-    virtual void shot() = 0;
-    virtual void move() = 0;
-
     float get_strength(UnitType against) const;
     Nationality get_nationality() const;
     UnitType get_unit_type() const;

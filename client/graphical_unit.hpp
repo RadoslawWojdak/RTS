@@ -2,7 +2,7 @@
 #define GRAPHICAL_UNIT_HPP_INCLUDED
 
 #include "SFML/Graphics.hpp"
-#include "unit.hpp"
+#include "../common/unit.hpp"
 
 class GraphicalUnit : public Unit
 {
