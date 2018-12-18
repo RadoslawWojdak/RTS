@@ -4,13 +4,16 @@
 #include "../common/network_player.hpp"
 #include "graphical_unit.hpp"
 #include "graphical_statistics.hpp"
+#include "graphical_factory.hpp"
+#include "tank_factory.hpp"
 #include <deque>
 #include <memory>
 
 class Client_Engine
 {
     //sort from largest to smallest!
-    std::deque <std::unique_ptr <Graphical_Unit> > units;//80
+    std::deque <std::unique_ptr <Tank_Factory> > factories;
+    std::deque <std::unique_ptr <Graphical_Unit> > units;
     std::deque <Network_Player> players;//80
     sf::Packet packet_to_send;//56
     sf::Packet received_packet;//56
@@ -55,10 +58,12 @@ public:
 private:
     void set_all_players_ready_status(bool status);
 
-    void mark_covered_units(const sf::RectangleShape& rect);
-    void unmark_units();
+    void mark_covered_objects(const sf::RectangleShape& rect);
+    void unmark_objects();
     void point_destination(const sf::Vector2i& target);
     void move_units();
+
+    void start_creating(Tank_Factory& factory);
 };
 
 #endif // ENGINE_HPP_INCLUDED

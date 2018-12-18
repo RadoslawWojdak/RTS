@@ -51,6 +51,7 @@ void Tank::set_parameters(const TankType& type)
         set_range(50.0f);
         set_abilities(ABILITY_SHOOTING | CRUSHING_UNITS | DEFENSE_AGAINST_CRUSHING);
         set_price(200u);
+        set_creating_time(5'000u);
     }
     case TANK_B:
     {
@@ -64,6 +65,7 @@ void Tank::set_parameters(const TankType& type)
         set_range(50.0f);
         set_abilities(ABILITY_SHOOTING | AREA_DAMAGE | CRUSHING_UNITS | DEFENSE_AGAINST_CRUSHING);
         set_price(150u);
+        set_creating_time(5'000u);
     }
     }
 }

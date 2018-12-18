@@ -2,13 +2,7 @@
 #define UNIT_HPP_INCLUDED
 
 #include <map>
-
-enum Nationality
-{
-    NATIONALITY_ALL = 0,
-    NATIONALITY_A,
-    NATIONALITY_B
-};
+#include "nationality.hpp"
 
 enum UnitType
 {
@@ -42,6 +36,7 @@ class Unit
     float m_target_y;
     uint m_abilities;
     uint m_price;
+    uint m_creating_time;//ms
     ushort m_team;
     bool m_has_target;
 
@@ -66,6 +61,7 @@ public:
     bool has_target() const;
     uint get_abilities() const;
     uint get_price() const;
+    uint get_creating_time() const;
     ushort get_team() const;
     void set_team(ushort team);
 
@@ -84,6 +80,7 @@ protected:
     void clear_abilities();
     void add_abilitiy(const Ability& ability);
     void set_price(uint price);
+    void set_creating_time(uint time);
 };
 
 #endif // TANK_HPP_INCLUDED

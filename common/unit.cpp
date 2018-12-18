@@ -191,6 +191,16 @@ void Unit::set_price(uint price)
     m_price = price;
 }
 
+uint Unit::get_creating_time() const
+{
+    return m_creating_time;
+}
+
+void Unit::set_creating_time(uint time)
+{
+    m_creating_time = time;
+}
+
 ushort Unit::get_team() const
 {
     return m_team;

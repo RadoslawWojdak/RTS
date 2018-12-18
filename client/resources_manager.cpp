@@ -17,6 +17,7 @@ void Resources_Manager::load_resources()
     m_textures[9].loadFromFile("Textures/Trawa3.png");
     m_textures[10].loadFromFile("Textures/MenuBackground1.png");
     m_textures[11].loadFromFile("Textures/Zasoby.png");
+    m_textures[12].loadFromFile("Textures/FabrykaCzolgow.png");
 }
 
 const sf::Font& Resources_Manager::get_font() const
