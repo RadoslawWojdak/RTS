@@ -10,6 +10,16 @@ Graphical_Unit::Graphical_Unit(const sf::Texture& texture, const sf::Vector2f& p
     );
     m_sprite.setPosition(pos);
     set_rotation_rad(0.0f);
+
+    m_mark_rect = sf::RectangleShape(sf::Vector2f(m_sprite.getGlobalBounds().width, m_sprite.getGlobalBounds().height));
+    m_mark_rect.setOrigin(m_sprite.getOrigin());
+    m_mark_rect.setOutlineThickness(1.0f);
+    m_mark_rect.setFillColor(sf::Color(255, 255, 255, 0));
+    m_mark_rect.setOutlineColor(sf::Color(255, 255, 255, 127));
+
+    adjust_mark_position();
+
+    unmark();
 }
 Graphical_Unit::Graphical_Unit(const sf::Texture& texture, float x, float y)
     : Graphical_Unit(texture, sf::Vector2f(x, y)) {}
@@ -40,6 +50,7 @@ void Graphical_Unit::move()
         );
 
         m_sprite.move(MOVE);
+        adjust_mark_position();
 
         //TODO: UNSET TARGET IF THE UNIT REACHED HIS DESTINATION
     }
@@ -58,6 +69,26 @@ void Graphical_Unit::set_target(const sf::Vector2f& pos)
 const sf::Texture* Graphical_Unit::get_texture() const
 {
     return m_sprite.getTexture();
+}
+
+const sf::Sprite& Graphical_Unit::get_sprite() const
+{
+    return m_sprite;
+}
+
+bool Graphical_Unit::is_marked() const
+{
+    return m_marked;
+}
+
+void Graphical_Unit::mark()
+{
+    m_marked = true;
+}
+
+void Graphical_Unit::unmark()
+{
+    m_marked = false;
 }
 
 float Graphical_Unit::get_rotation_rad() const
@@ -89,5 +120,15 @@ float Graphical_Unit::rad_to_deg(float angle)
 
 void Graphical_Unit::display(sf::RenderWindow& window) const
 {
+    if (is_marked())
+    {
+        window.draw(m_mark_rect);
+    }
+
     window.draw(m_sprite);
+}
+
+void Graphical_Unit::adjust_mark_position()
+{
+    m_mark_rect.setPosition(m_sprite.getPosition());
 }

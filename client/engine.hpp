@@ -52,6 +52,11 @@ public:
 
 private:
     void set_all_players_ready_status(bool status);
+
+    void mark_covered_units(const sf::RectangleShape& rect);
+    void unmark_units();
+    void point_destination(const sf::Vector2i& target);
+    void move_units();
 };
 
 #endif // ENGINE_HPP_INCLUDED

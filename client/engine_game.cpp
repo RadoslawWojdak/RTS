@@ -39,15 +39,30 @@ void Client_Engine::game_receive_inputs()
         {
             if (event.mouseButton.button == sf::Mouse::Left)
             {
+                unmark_units();
                 cursor.start_marking(sf::Mouse::getPosition(window));
             }
             break;
         }
         case sf::Event::MouseButtonReleased:
         {
-            if (event.mouseButton.button == sf::Mouse::Left)
+            switch (event.mouseButton.button)
             {
-                cursor.stop_marking();
+                case sf::Mouse::Left:
+                {
+                    sf::RectangleShape marking_rect = cursor.stop_marking();
+                    mark_covered_units(marking_rect);
+                    break;
+                }
+                case sf::Mouse::Right:
+                {
+                    point_destination(sf::Mouse::getPosition(window));
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
             }
             break;
         }
@@ -64,6 +79,7 @@ void Client_Engine::game_logic()
     time = clock.restart();
 
     cursor.continue_marking(sf::Mouse::getPosition(window));
+    move_units();
 
     if(server.get_network_timeout() > sf::seconds(1))
     {
@@ -85,4 +101,44 @@ void Client_Engine::game_draw_frame()
     cursor.display_marked_rect(window);
 
     window.display();
+}
+
+void Client_Engine::mark_covered_units(const sf::RectangleShape& rect)
+{
+    const auto MATH_RECT = rect.getGlobalBounds();
+
+    for (auto& unit : units)
+    {
+        if (MATH_RECT.intersects(unit->get_sprite().getGlobalBounds()))
+        {
+            unit->mark();
+        }
+    }
+}
+
+void Client_Engine::unmark_units()
+{
+    for (auto& unit : units)
+    {
+        unit->unmark();
+    }
+}
+
+void Client_Engine::point_destination(const sf::Vector2i& target)
+{
+    for (auto& unit : units)
+    {
+        if (unit->is_marked())
+        {
+            unit->set_target(sf::Vector2f(target));
+        }
+    }
+}
+
+void Client_Engine::move_units()
+{
+    for (auto& unit : units)
+    {
+        unit->move();
+    }
 }

@@ -1,4 +1,5 @@
 #include "cursor.hpp"
+#include <math.h>
 
 Cursor::Cursor()
 {
@@ -29,6 +30,12 @@ void Cursor::continue_marking(const sf::Vector2i& mouse_position)
 const sf::RectangleShape& Cursor::stop_marking()
 {
     m_marking = false;
+
+    if (std::fabs(m_rect.getSize().x) < 1 || std::fabs(m_rect.getSize().y) < 1)   //For marking single unit
+    {
+        m_rect.setSize(sf::Vector2f(1.0f, 1.0f));
+    }
+
     return std::move(m_rect);
 }
 
