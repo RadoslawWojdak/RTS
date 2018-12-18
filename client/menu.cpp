@@ -65,7 +65,10 @@ void Menu::authors_menu(const sf::RenderWindow& window)
 
     const sf::String AUTHORS[] = {
         L"Kacper Piwiński",
-        L"Radosław Wojdak"
+        L"Radosław Wojdak",
+        L"Robert Kamiński",
+        L"Dawid Lubczyński",
+        L"Jakub Jasonek"
     };
 
     for(const sf::String& author: AUTHORS)
