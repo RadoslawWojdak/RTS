@@ -10,8 +10,10 @@ extern Network_Data server;
 
 Cursor cursor;
 
-void Client_Engine::init_game()
+void Client_Engine::init_game(const sf::RenderWindow& window)
 {
+    m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u);
+
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 256));
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 288));
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 288));
@@ -101,6 +103,8 @@ void Client_Engine::game_draw_frame()
     }
 
     cursor.display_marked_rect(window);
+
+    m_game_stats->display(window);
 
     window.display();
 }

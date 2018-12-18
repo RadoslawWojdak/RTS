@@ -3,6 +3,7 @@
 
 #include "../common/network_player.hpp"
 #include "graphical_unit.hpp"
+#include "graphical_statistics.hpp"
 #include <deque>
 #include <memory>
 
@@ -16,13 +17,14 @@ class Client_Engine
     sf::UdpSocket socket;//48
     sf::Clock clock;//8
     sf::Time time;//8
+    std::unique_ptr<Graphical_Statistics> m_game_stats;
     bool menu_loop = true;//1
     bool lobby_loop = false;//1
     bool game_loop = false;//1
 
 public:
     void init();
-    void init_game();
+    void init_game(const sf::RenderWindow& window);
 
     void setup_window(bool fullscreen);
     void return_to_menu();
