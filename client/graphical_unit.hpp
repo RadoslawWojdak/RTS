@@ -8,6 +8,7 @@ class Graphical_Unit : public Unit
 {
     sf::Sprite m_sprite;
     sf::RectangleShape m_mark_rect;
+    sf::Vector2f target;
     float m_rotation;//rad
     bool m_marked;
 

@@ -52,7 +52,13 @@ void Graphical_Unit::move()
         m_sprite.move(MOVE);
         adjust_mark_position();
 
-        //TODO: UNSET TARGET IF THE UNIT REACHED HIS DESTINATION
+        //UNSET TARGET IF THE UNIT REACHED ITS DESTINATION
+        const sf::Vector2f NEW_POSITION = m_sprite.getPosition();
+
+        if (POSITION.x > target.x ^ NEW_POSITION.x > target.x)
+        {
+            unset_target();
+        }
     }
 }
 
@@ -64,6 +70,7 @@ sf::Vector2f Graphical_Unit::get_target() const
 void Graphical_Unit::set_target(const sf::Vector2f& pos)
 {
     Unit::set_target(pos.x, pos.y);
+    target = pos;
 }
 
 const sf::Texture* Graphical_Unit::get_texture() const
