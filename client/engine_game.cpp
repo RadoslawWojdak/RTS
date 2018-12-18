@@ -56,7 +56,9 @@ void Client_Engine::game_receive_inputs()
                 }
                 case sf::Mouse::Right:
                 {
-                    point_destination(sf::Mouse::getPosition(window));
+                    sf::Vector2i pos_on_grid(((sf::Mouse::getPosition(window).x + 16) / 32) * 32,
+                                             ((sf::Mouse::getPosition(window).y + 16) / 32) * 32);
+                    point_destination(pos_on_grid);
                     break;
                 }
                 default:
