@@ -2,40 +2,40 @@
 
 Cursor::Cursor()
 {
-    marking = false;
+    m_marking = false;
 
-    rect = sf::RectangleShape();
-    rect.setOutlineColor(sf::Color::Green);
-    rect.setOutlineThickness(1.0f);
-    rect.setFillColor(sf::Color(0, 255, 0, 64));
+    m_rect = sf::RectangleShape();
+    m_rect.setOutlineColor(sf::Color::Green);
+    m_rect.setOutlineThickness(1.0f);
+    m_rect.setFillColor(sf::Color(0, 255, 0, 64));
 }
 
 void Cursor::start_marking(const sf::Vector2i& mouse_position)
 {
-    marking = true;
+    m_marking = true;
 
-    rect.setPosition(sf::Vector2f(mouse_position));
-    rect.setSize(sf::Vector2f(1, 1));
+    m_rect.setPosition(sf::Vector2f(mouse_position));
+    m_rect.setSize(sf::Vector2f(1, 1));
 }
 
 void Cursor::continue_marking(const sf::Vector2i& mouse_position)
 {
-    if (marking)
+    if (m_marking)
     {
-        rect.setSize(sf::Vector2f(mouse_position.x - rect.getPosition().x, mouse_position.y - rect.getPosition().y));
+        m_rect.setSize(sf::Vector2f(mouse_position.x - m_rect.getPosition().x, mouse_position.y - m_rect.getPosition().y));
     }
 }
 
 const sf::RectangleShape& Cursor::stop_marking()
 {
-    marking = false;
-    return std::move(rect);
+    m_marking = false;
+    return std::move(m_rect);
 }
 
 void Cursor::draw_marked_rect(sf::RenderWindow& window)
 {
-    if (marking)
+    if (m_marking)
     {
-        window.draw(rect);
+        window.draw(m_rect);
     }
 }

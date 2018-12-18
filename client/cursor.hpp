@@ -5,8 +5,8 @@
 
 class Cursor
 {
-    sf::RectangleShape rect;
-    bool marking;
+    sf::RectangleShape m_rect;
+    bool m_marking;
 
 public:
     Cursor();
