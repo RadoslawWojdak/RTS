@@ -4,7 +4,7 @@
 extern Resources_Manager resources_manager;
 
 Infantry::Infantry(const InfantryType& type, ushort team, const sf::Vector2f& pos)
-    : GraphicalUnit(get_texture(type), pos)
+    : Graphical_Unit(get_texture(type), pos)
 {
     set_unit_type(UNIT_TANK);
     set_parameters(type);

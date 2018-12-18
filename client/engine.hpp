@@ -2,13 +2,14 @@
 #define ENGINE_HPP_INCLUDED
 
 #include "../common/network_player.hpp"
-#include "../common/game_unit.hpp"
+#include "graphical_unit.hpp"
 #include <deque>
+#include <memory>
 
 class Client_Engine
 {
     //sort from largest to smallest!
-    std::deque <Game_Unit> units;//80
+    std::deque <std::unique_ptr <Graphical_Unit> > units;//80
     std::deque <Network_Player> players;//80
     sf::Packet packet_to_send;//56
     sf::Packet received_packet;//56
@@ -21,6 +22,7 @@ class Client_Engine
 
 public:
     void init();
+    void init_game();
 
     void setup_window(bool fullscreen);
     void return_to_menu();

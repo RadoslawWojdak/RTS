@@ -2,10 +2,21 @@
 #include "engine.hpp"
 #include "network_data.hpp"
 #include "cursor.hpp"
+#include "infantry.hpp"
+#include "tank.hpp"
 
 extern sf::RenderWindow window;
 extern Network_Data server;
+
 Cursor cursor;
+
+void Client_Engine::init_game()
+{
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 256));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 288));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 288));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 256));
+}
 
 void Client_Engine::game_receive_inputs()
 {
@@ -66,7 +77,12 @@ void Client_Engine::game_draw_frame()
 {
     window.clear();
 
-    cursor.draw_marked_rect(window);
+    for (auto& unit : units)
+    {
+        unit->display(window);
+    }
+
+    cursor.display_marked_rect(window);
 
     window.display();
 }

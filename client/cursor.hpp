@@ -14,7 +14,7 @@ public:
     void start_marking(const sf::Vector2i& mouse_position);
     void continue_marking(const sf::Vector2i& mouse_position);
     const sf::RectangleShape& stop_marking();
-    void draw_marked_rect(sf::RenderWindow& window);
+    void display_marked_rect(sf::RenderWindow& window);
 };
 
 #endif // CURSOR_HPP_INCLUDED

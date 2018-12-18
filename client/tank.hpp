@@ -10,7 +10,7 @@ enum TankType
     TANK_B
 };
 
-class Tank : public GraphicalUnit
+class Tank : public Graphical_Unit
 {
 public:
     Tank(const TankType& type, ushort team, const sf::Vector2f& pos);

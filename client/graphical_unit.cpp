@@ -1,7 +1,7 @@
 #include "graphical_unit.hpp"
 #include <math.h>
 
-GraphicalUnit::GraphicalUnit(const sf::Texture& texture, const sf::Vector2f& pos)
+Graphical_Unit::Graphical_Unit(const sf::Texture& texture, const sf::Vector2f& pos)
 {
     m_sprite.setTexture(texture);
     m_sprite.setOrigin(
@@ -11,10 +11,10 @@ GraphicalUnit::GraphicalUnit(const sf::Texture& texture, const sf::Vector2f& pos
     m_sprite.setPosition(pos);
     set_rotation_rad(0.0f);
 }
-GraphicalUnit::GraphicalUnit(const sf::Texture& texture, float x, float y)
-    : GraphicalUnit(texture, sf::Vector2f(x, y)) {}
+Graphical_Unit::Graphical_Unit(const sf::Texture& texture, float x, float y)
+    : Graphical_Unit(texture, sf::Vector2f(x, y)) {}
 
-void GraphicalUnit::move()
+void Graphical_Unit::move()
 {
     if (has_target())
     {
@@ -45,49 +45,49 @@ void GraphicalUnit::move()
     }
 }
 
-sf::Vector2f GraphicalUnit::get_target() const
+sf::Vector2f Graphical_Unit::get_target() const
 {
     return sf::Vector2f(get_target_x(), get_target_y());
 }
 
-void GraphicalUnit::set_target(const sf::Vector2f& pos)
+void Graphical_Unit::set_target(const sf::Vector2f& pos)
 {
     Unit::set_target(pos.x, pos.y);
 }
 
-const sf::Texture* GraphicalUnit::get_texture() const
+const sf::Texture* Graphical_Unit::get_texture() const
 {
     return m_sprite.getTexture();
 }
 
-float GraphicalUnit::get_rotation_rad() const
+float Graphical_Unit::get_rotation_rad() const
 {
     return m_rotation;
 }
 
-void GraphicalUnit::set_rotation_rad(float angle)
+void Graphical_Unit::set_rotation_rad(float angle)
 {
     m_rotation = angle;
     m_sprite.setRotation(rad_to_deg(angle));
 }
 
-void GraphicalUnit::set_rotation_deg(float angle)
+void Graphical_Unit::set_rotation_deg(float angle)
 {
     m_rotation = deg_to_rad(angle);
     m_sprite.setRotation(angle);
 }
 
-float GraphicalUnit::deg_to_rad(float angle)
+float Graphical_Unit::deg_to_rad(float angle)
 {
     return angle * (M_PI / 180.0f);
 }
 
-float GraphicalUnit::rad_to_deg(float angle)
+float Graphical_Unit::rad_to_deg(float angle)
 {
     return angle * (180.0f / M_PI);
 }
 
-void GraphicalUnit::display(sf::RenderWindow& window) const
+void Graphical_Unit::display(sf::RenderWindow& window) const
 {
     window.draw(m_sprite);
 }

@@ -11,7 +11,7 @@ enum InfantryType
     INFANTRY_C
 };
 
-class Infantry : public GraphicalUnit
+class Infantry : public Graphical_Unit
 {
 public:
     Infantry(const InfantryType& type, ushort team, const sf::Vector2f& pos);

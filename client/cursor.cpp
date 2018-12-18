@@ -32,7 +32,7 @@ const sf::RectangleShape& Cursor::stop_marking()
     return std::move(m_rect);
 }
 
-void Cursor::draw_marked_rect(sf::RenderWindow& window)
+void Cursor::display_marked_rect(sf::RenderWindow& window)
 {
     if (m_marking)
     {

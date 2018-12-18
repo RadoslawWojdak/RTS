@@ -4,14 +4,16 @@
 #include "SFML/Graphics.hpp"
 #include "../common/unit.hpp"
 
-class GraphicalUnit : public Unit
+class Graphical_Unit : public Unit
 {
     sf::Sprite m_sprite;
     float m_rotation;//rad
 
 public:
-    GraphicalUnit(const sf::Texture& texture, const sf::Vector2f& pos);
-    GraphicalUnit(const sf::Texture& texture, float x, float y);
+    Graphical_Unit(const sf::Texture& texture, const sf::Vector2f& pos);
+    Graphical_Unit(const sf::Texture& texture, float x, float y);
+
+    virtual ~Graphical_Unit() {};
 
     virtual void shot() = 0;
     void move();
