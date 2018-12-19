@@ -4,7 +4,7 @@
 void Resources_Manager::load_resources()
 {
     m_font.loadFromFile("Fonts/font.ttf");
-    m_textures.resize(12);//number of textures
+    m_textures.resize(14);//number of textures
     m_textures[0].loadFromFile("Textures/cb.bmp");
     m_textures[1].loadFromFile("Textures/Czolg.png");
     m_textures[2].loadFromFile("Textures/Drzewko.png");
@@ -18,6 +18,7 @@ void Resources_Manager::load_resources()
     m_textures[10].loadFromFile("Textures/MenuBackground1.png");
     m_textures[11].loadFromFile("Textures/Zasoby.png");
     m_textures[12].loadFromFile("Textures/FabrykaCzolgow.png");
+    m_textures[13].loadFromFile("Textures/PojemnoscJednostek.png");
 }
 
 const sf::Font& Resources_Manager::get_font() const

@@ -13,7 +13,7 @@ Cursor cursor;
 
 void Client_Engine::init_game(const sf::RenderWindow& window)
 {
-    m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u);
+    m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u, 15u);
 
     factories.emplace_back(std::make_unique<Tank_Factory>(512, 256));
 
@@ -21,6 +21,8 @@ void Client_Engine::init_game(const sf::RenderWindow& window)
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 288));
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 288));
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 256));
+
+    m_game_stats->increase_current_units_number(4u);
 }
 
 void Client_Engine::game_receive_inputs()
@@ -108,6 +110,7 @@ void Client_Engine::game_logic()
             std::unique_ptr<Tank> tank = factory->get_tank();
             if (tank != nullptr)
             {
+                m_game_stats->increase_current_units_number(1);
                 units.push_back(std::move(tank));
             }
         }
@@ -208,12 +211,15 @@ void Client_Engine::move_units()
 
 void Client_Engine::start_creating(Tank_Factory& factory)
 {
-    const auto TANK_TYPE = TankType::TANK_A;
-    const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2f(0,0)).get_price();
-
-    if (TANK_PRICE < m_game_stats->get_resources() && !factory.is_creating())
+    if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
-        factory.start_creating(TANK_TYPE);
-        m_game_stats->subtract_resources(TANK_PRICE);
+        const auto TANK_TYPE = TankType::TANK_A;
+        const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2f(0,0)).get_price();
+
+        if (TANK_PRICE < m_game_stats->get_resources() && !factory.is_creating())
+        {
+            factory.start_creating(TANK_TYPE);
+            m_game_stats->subtract_resources(TANK_PRICE);
+        }
     }
 }
