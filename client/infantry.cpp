@@ -29,10 +29,10 @@ const sf::Texture& Infantry::get_texture(const InfantryType& type)
 {
     switch(type)
     {
-    case INFANTRY_A: return resources_manager.get_texture(1);
-    case INFANTRY_B: return resources_manager.get_texture(1);
-    case INFANTRY_C: return resources_manager.get_texture(1);
-    default:         return resources_manager.get_texture(1);
+    case INFANTRY_A: return resources_manager.get_texture(17);
+    case INFANTRY_B: return resources_manager.get_texture(18);
+    case INFANTRY_C: return resources_manager.get_texture(19);
+    default:         return resources_manager.get_texture(17);
     }
 }
 

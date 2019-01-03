@@ -6,6 +6,7 @@
 
 enum InfantryType
 {
+    INFANTRY_NONE = -1,
     INFANTRY_A = 0,
     INFANTRY_B,
     INFANTRY_C

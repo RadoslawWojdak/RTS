@@ -5,6 +5,7 @@
 #include "graphical_unit.hpp"
 #include "graphical_statistics.hpp"
 #include "graphical_factory.hpp"
+#include "infantry_factory.hpp"
 #include "tank_factory.hpp"
 #include <deque>
 #include <memory>
@@ -12,7 +13,8 @@
 class Client_Engine
 {
     //sort from largest to smallest!
-    std::deque <std::unique_ptr <Tank_Factory> > factories;
+    std::deque <std::unique_ptr <Tank_Factory> > tankFactories;
+    std::deque <std::unique_ptr <Infantry_Factory> > infantryFactories;
     std::deque <std::unique_ptr <Graphical_Unit> > units;
     std::deque <Network_Player> players;//80
     sf::Packet packet_to_send;//56
@@ -64,6 +66,7 @@ private:
     void move_units();
 
     void start_creating(const sf::RenderWindow& window, Tank_Factory& factory);
+    void start_creating(const sf::RenderWindow& window, Infantry_Factory& factory);
 };
 
 #endif // ENGINE_HPP_INCLUDED

@@ -45,7 +45,8 @@ void Client_Engine::return_to_menu()
     server.reset_network_timeout();
     players.clear();
     units.clear();
-    factories.clear();
+    tankFactories.clear();
+    infantryFactories.clear();
     menu.init(window);
 }
 

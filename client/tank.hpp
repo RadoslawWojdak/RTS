@@ -6,7 +6,7 @@
 
 enum TankType
 {
-    NONE = -1,
+    TANK_NONE = -1,
     TANK_A = 0,
     TANK_B
 };
