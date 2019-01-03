@@ -30,7 +30,7 @@ const sf::Texture& Tank::get_texture(const TankType& type)
     switch(type)
     {
     case TANK_A: return resources_manager.get_texture(1);
-    case TANK_B: return resources_manager.get_texture(1);
+    case TANK_B: return resources_manager.get_texture(16);
     default:     return resources_manager.get_texture(1);
     }
 }
@@ -65,7 +65,7 @@ void Tank::set_parameters(const TankType& type)
         set_range(50.0f);
         set_abilities(ABILITY_SHOOTING | AREA_DAMAGE | CRUSHING_UNITS | DEFENSE_AGAINST_CRUSHING);
         set_price(150u);
-        set_creating_time(5'000u);
+        set_creating_time(4'000u);
     }
     }
 }

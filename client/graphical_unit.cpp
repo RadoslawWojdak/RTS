@@ -106,13 +106,23 @@ float Graphical_Unit::get_rotation_rad() const
 void Graphical_Unit::set_rotation_rad(float angle)
 {
     m_rotation = angle;
+    // const auto IS_GOING_LEFT = (angle < 2 * 3.14 - (3.14 / 2) && angle > (3.14 / 2));
+
+    // if (IS_GOING_LEFT)
+    // {
+    //     m_sprite.setScale(-1.0f, 1.0f);
+    // }
+    // else
+    // {
+    //     m_sprite.setScale(1.0f, 1.0f);
+    // }
     m_sprite.setRotation(rad_to_deg(angle));
 }
 
 void Graphical_Unit::set_rotation_deg(float angle)
 {
     m_rotation = deg_to_rad(angle);
-    m_sprite.setRotation(angle);
+    set_rotation_rad(m_rotation);
 }
 
 float Graphical_Unit::deg_to_rad(float angle)

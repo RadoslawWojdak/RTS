@@ -1,9 +1,10 @@
 #include "tank_factory.hpp"
+#include <vector>
 #include "resources_manager.hpp"
 
 extern Resources_Manager resources_manager;
 
-Tank_Factory::Tank_Factory(const sf::Vector2f& pos)
+Tank_Factory::Tank_Factory(const sf::RenderWindow& window, const sf::Vector2f& pos)
     : Graphical_Factory(resources_manager.get_texture(12), pos)
 {
     finished_time_rect = sf::RectangleShape(sf::Vector2f(16, 32));
@@ -15,9 +16,14 @@ Tank_Factory::Tank_Factory(const sf::Vector2f& pos)
     total_time_rect.setOrigin(finished_time_rect.getGlobalBounds().width / 2, 0.0f);
     total_time_rect.setPosition(pos.x, pos.y - get_sprite().getOrigin().y - finished_time_rect.getOrigin().y - 32 - 8); // Bar will filling from bottom
     total_time_rect.setFillColor(sf::Color(255, 255, 255, 64));
+
+    std::vector<const sf::Texture*> shop_textures;
+    shop_textures.push_back(&resources_manager.get_texture(1));
+    shop_textures.push_back(&resources_manager.get_texture(16));
+    m_shopping_menu = std::make_unique<cShoppingMenu>(window, resources_manager.get_texture(15), shop_textures);
 }
-Tank_Factory::Tank_Factory(float x, float y)
-    : Tank_Factory(sf::Vector2f(x, y))
+Tank_Factory::Tank_Factory(const sf::RenderWindow& window, float x, float y)
+    : Tank_Factory(window, sf::Vector2f(x, y))
 {
     m_is_creating = false;
 }
@@ -67,6 +73,10 @@ bool Tank_Factory::is_creating() const
     return m_is_creating;
 }
 
+TankType Tank_Factory::get_shop_item_clicked(const sf::RenderWindow& window) const {
+    return static_cast<TankType>(m_shopping_menu->getClickedItemId(window));
+}
+
 void Tank_Factory::display(sf::RenderWindow& window) const
 {
     Graphical_Factory::display(window);
@@ -75,5 +85,9 @@ void Tank_Factory::display(sf::RenderWindow& window) const
     {
         window.draw(total_time_rect);
         window.draw(finished_time_rect);
+    }
+
+    if (is_marked()) {
+        m_shopping_menu->display(window);
     }
 }

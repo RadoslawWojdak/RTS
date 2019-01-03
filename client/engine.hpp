@@ -63,7 +63,7 @@ private:
     void point_destination(const sf::Vector2i& target);
     void move_units();
 
-    void start_creating(Tank_Factory& factory);
+    void start_creating(const sf::RenderWindow& window, Tank_Factory& factory);
 };
 
 #endif // ENGINE_HPP_INCLUDED

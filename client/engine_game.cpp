@@ -15,7 +15,7 @@ void Client_Engine::init_game(const sf::RenderWindow& window)
 {
     m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u, 15u);
 
-    factories.emplace_back(std::make_unique<Tank_Factory>(512, 256));
+    factories.emplace_back(std::make_unique<Tank_Factory>(window, 512, 256));
 
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 256));
     units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 288));
@@ -27,6 +27,7 @@ void Client_Engine::init_game(const sf::RenderWindow& window)
 
 void Client_Engine::game_receive_inputs()
 {
+    static bool is_marking = false;
     sf::Event event;
     while( window.pollEvent(event) )
     {
@@ -46,8 +47,20 @@ void Client_Engine::game_receive_inputs()
         {
             if (event.mouseButton.button == sf::Mouse::Left)
             {
-                unmark_objects();
-                cursor.start_marking(sf::Mouse::getPosition(window));
+                is_marking = true;
+                for (auto& factory : factories) {
+                    if (factory->is_marked()) {
+                        if (factory->get_shop_item_clicked(window) != TankType::NONE) {
+                            is_marking = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (is_marking) {
+                    unmark_objects();
+                    cursor.start_marking(sf::Mouse::getPosition(window));
+                }
             }
             break;
         }
@@ -57,8 +70,19 @@ void Client_Engine::game_receive_inputs()
             {
                 case sf::Mouse::Left:
                 {
-                    sf::RectangleShape marking_rect = cursor.stop_marking();
-                    mark_covered_objects(marking_rect);
+                    if (!is_marking) {
+                        for (auto& factory : factories) {
+                            if (factory->is_marked()) {
+                                if (factory->get_shop_item_clicked(window) != TankType::NONE) {
+                                    start_creating(window, *factory);
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        sf::RectangleShape marking_rect = cursor.stop_marking();
+                        mark_covered_objects(marking_rect);
+                    }
                     break;
                 }
                 case sf::Mouse::Right:
@@ -66,18 +90,6 @@ void Client_Engine::game_receive_inputs()
                     sf::Vector2i pos_on_grid(((sf::Mouse::getPosition(window).x + 16) / 32) * 32,
                                              ((sf::Mouse::getPosition(window).y + 16) / 32) * 32);
                     point_destination(pos_on_grid);
-
-                    for (auto& factory : factories)
-                    {
-                        if (factory->is_marked())
-                        {
-                            if (factory->get_sprite().getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(window))))
-                            {
-                                start_creating(*factory);
-                            }
-                            break;
-                        }
-                    }
 
                     break;
                 }
@@ -209,11 +221,11 @@ void Client_Engine::move_units()
     }
 }
 
-void Client_Engine::start_creating(Tank_Factory& factory)
+void Client_Engine::start_creating(const sf::RenderWindow& window, Tank_Factory& factory)
 {
     if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
-        const auto TANK_TYPE = TankType::TANK_A;
+        const auto TANK_TYPE = factory.get_shop_item_clicked(window);
         const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2f(0,0)).get_price();
 
         if (TANK_PRICE < m_game_stats->get_resources() && !factory.is_creating())
