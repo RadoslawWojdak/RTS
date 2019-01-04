@@ -7,6 +7,7 @@
 #include "graphical_unit.hpp"
 #include "graphical_statistics.hpp"
 #include "graphical_factory.hpp"
+#include "house.hpp"
 #include "infantry_factory.hpp"
 #include "tank_factory.hpp"
 #include <deque>
@@ -17,6 +18,7 @@ class Client_Engine
     //sort from largest to smallest!
     std::deque <std::unique_ptr <Tank_Factory> > tankFactories;
     std::deque <std::unique_ptr <Infantry_Factory> > infantryFactories;
+    std::deque <std::unique_ptr <cHouse> > houses;
     std::deque <std::unique_ptr <Graphical_Unit> > units;
     std::deque <cDeposit> deposits;
     std::deque <Network_Player> players;//80

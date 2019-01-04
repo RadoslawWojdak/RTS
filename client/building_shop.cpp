@@ -3,6 +3,7 @@
 #include "resources_manager.hpp"
 #include "infantry_factory.hpp"
 #include "tank_factory.hpp"
+#include "house.hpp"
 
 extern Resources_Manager resources_manager;
 
@@ -23,6 +24,7 @@ cBuildingShop::cBuildingShop(const sf::RenderWindow& window) {
     std::vector<const sf::Texture*> shop_textures;
     shop_textures.push_back(&resources_manager.get_texture(12));
     shop_textures.push_back(&resources_manager.get_texture(20));
+    shop_textures.push_back(&resources_manager.get_texture(23));
     m_shopping_menu = std::make_unique<cShoppingMenu>(window, resources_manager.get_texture(14), shop_textures);
 
     m_is_creating = false;
@@ -32,19 +34,31 @@ cBuildingShop::cBuildingShop(const sf::RenderWindow& window) {
 
 void cBuildingShop::start_creating(const sf::RenderWindow& window, const BuildingType& building_type) {
     const auto RECT_SIZE  = resources_manager.get_texture(14).getSize();
-    
+
     switch (building_type) {
         case BUILDING_INFANTRY_FACTORY: {
-            m_created_factory = std::make_unique<Infantry_Factory>(window, sf::Vector2f(0.0f, 0.0f));
+            Infantry_Factory factory(window, sf::Vector2f(16.0f, 16.0f));
+            this->price = factory.Factory::get_price();
+            this->time = factory.Factory::get_creating_time();
             m_current_building_texture_id = 20;
             finished_time_rect.setPosition(RECT_SIZE.x + RECT_SIZE.x / 2.0f, finished_time_rect.getPosition().y);
             total_time_rect.setPosition(finished_time_rect.getPosition());
             break;
         }
         case BUILDING_TANK_FACTORY: {
-            m_created_factory = std::make_unique<Tank_Factory>(window, sf::Vector2f(0.0f, 0.0f));
+            Tank_Factory factory(window, sf::Vector2f(0.0f, 0.0f));
+            this->price = factory.Factory::get_price();
+            this->time = factory.Factory::get_creating_time();
             m_current_building_texture_id = 12;
             finished_time_rect.setPosition(RECT_SIZE.x / 2.0f, finished_time_rect.getPosition().y);
+            total_time_rect.setPosition(finished_time_rect.getPosition());
+            break;
+        }
+        case BUILDING_HOUSE: {
+            this->price = cHouse(0, 0).get_price();
+            this->time = cHouse(0, 0).get_creating_time();
+            m_current_building_texture_id = 23;
+            finished_time_rect.setPosition(2 * RECT_SIZE.x + RECT_SIZE.x / 2.0f, finished_time_rect.getPosition().y);
             total_time_rect.setPosition(finished_time_rect.getPosition());
             break;
         }
@@ -69,16 +83,22 @@ unsigned int cBuildingShop::get_creating_time() {
 }
 
 unsigned int cBuildingShop::get_total_time() const {
-    return m_created_factory->get_creating_time();
+    return time;
 }
 
-std::unique_ptr<Graphical_Factory> cBuildingShop::get_factory() {
-    if (is_finished()) {
-        m_is_creating = false;
-        m_current_building = BUILDING_NONE;
-        return std::move(m_created_factory);
-    }
-    return nullptr;
+// std::unique_ptr<Factory> cBuildingShop::get_factory() {
+//     if (is_finished()) {
+//         m_is_creating = false;
+//         m_current_building = BUILDING_NONE;
+//         return std::move(m_created_factory);
+//     }
+//     return nullptr;
+// }
+
+void cBuildingShop::remove_factory() {
+    m_is_creating = false;
+    m_current_building = BUILDING_NONE;
+    // m_created_factory = nullptr;
 }
 
 bool cBuildingShop::is_creating() const {
@@ -86,8 +106,8 @@ bool cBuildingShop::is_creating() const {
 }
 
 bool cBuildingShop::is_finished() {
-    if (m_created_factory) {
-        if (get_creating_time() >= m_created_factory->get_creating_time()) {
+    if (is_creating()) {
+        if (get_creating_time() >= time) {
             return true;
         }
     }

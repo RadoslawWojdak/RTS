@@ -46,8 +46,8 @@ void cShoppingMenu::display(sf::RenderWindow& window) const {
 }
 
 int cShoppingMenu::getClickedItemId(const sf::RenderWindow& window) const {
-    for (auto i = 0; i < m_items.size(); i++) {
-        if (m_items[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)))) {
+    for (auto i = 0; i < m_frames.size(); i++) {
+        if (m_frames[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)))) {
             return i;
         }
     }

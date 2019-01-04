@@ -143,7 +143,7 @@ void Client_Engine::game_receive_inputs()
                                     start_creating(*buildingShop);
                                 }
                             } else if (keep_building) {
-                                const auto POSITION = sf::Mouse::getPosition(window);
+                                const auto POSITION = keepingObjectSprite.getPosition();
                                 switch (buildingShop->get_current_building()) {
                                     case BUILDING_INFANTRY_FACTORY: {
                                         infantryFactories.emplace_back(std::make_unique<Infantry_Factory>(window, sf::Vector2f(POSITION)));
@@ -153,9 +153,14 @@ void Client_Engine::game_receive_inputs()
                                         tankFactories.emplace_back(std::make_unique<Tank_Factory>(window, sf::Vector2f(POSITION)));
                                         break;
                                     }
+                                    case BUILDING_HOUSE: {
+                                        houses.emplace_back(std::make_unique<cHouse>(POSITION.x / 32, POSITION.y / 32));
+                                        m_game_stats->increase_max_units_capacity(5u);
+                                        break;
+                                    }
                                     case BUILDING_NONE: { break; }
                                 }
-                                buildingShop->get_factory();
+                                buildingShop->remove_factory();
                                 keep_building = false;
                             }
                         }
@@ -247,6 +252,9 @@ void Client_Engine::game_draw_frame()
     }
     for (auto& factory : infantryFactories) {
         factory->display(window);
+    }
+    for (auto& house : houses) {
+        house->display(window);
     }
 
     if (!marked_building) {
@@ -388,6 +396,10 @@ void Client_Engine::start_creating(cBuildingShop& shop)
             buildingPrice = Tank_Factory(window, sf::Vector2f(0,0)).get_price();
             break;
         }
+        case BUILDING_HOUSE: {
+            buildingPrice = cHouse(sf::Vector2u(0, 0)).get_price();
+            break;
+        }
         case BUILDING_NONE: { break; }
     }
 
@@ -404,10 +416,12 @@ void Client_Engine::adjust_keeping_object() {
         if (KEEPING_TEXTURE_ID != -1) {
             window.setMouseCursorVisible(false);
             keepingObjectSprite.setTexture(resources_manager.get_texture(KEEPING_TEXTURE_ID));
+            keepingObjectSprite.setTextureRect(sf::IntRect(0, 0, keepingObjectSprite.getTexture()->getSize().x, keepingObjectSprite.getTexture()->getSize().y));
             keepingObjectSprite.setOrigin(keepingObjectSprite.getTextureRect().width / 2.0f,
                                           keepingObjectSprite.getTextureRect().height / 2.0f);
         }
-        keepingObjectSprite.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+        keepingObjectSprite.setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x - sf::Mouse::getPosition(window).x % 32,
+                                                     sf::Mouse::getPosition(window).y - sf::Mouse::getPosition(window).y % 32));
     } else {
         window.setMouseCursorVisible(true);
     }

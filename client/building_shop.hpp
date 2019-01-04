@@ -3,14 +3,14 @@
 
 #include <memory>
 #include "SFML/Graphics.hpp"
-#include "graphical_factory.hpp"
 #include "shopping_menu.hpp"
 
 enum BuildingType
 {
     BUILDING_NONE = -1,
     BUILDING_TANK_FACTORY = 0,
-    BUILDING_INFANTRY_FACTORY
+    BUILDING_INFANTRY_FACTORY,
+    BUILDING_HOUSE
 };
 
 class cBuildingShop {
@@ -20,7 +20,7 @@ public:
 
     void start_creating(const sf::RenderWindow& window, const BuildingType& unit_type);
 
-    std::unique_ptr<Graphical_Factory> get_factory();
+    void remove_factory();
 
     bool is_creating() const;
     bool is_finished();
@@ -38,13 +38,16 @@ protected:
 private:
     sf::RectangleShape finished_time_rect;
     sf::RectangleShape total_time_rect;
-    std::unique_ptr<Graphical_Factory> m_created_factory;
+    // std::unique_ptr<Factory> m_created_factory;
     sf::Clock m_creating_time_clock;
     bool m_is_creating;
     std::unique_ptr<cShoppingMenu> m_shopping_menu;
 
     BuildingType m_current_building;
     int m_current_building_texture_id;
+
+    unsigned int price;
+    unsigned int time;
 };
 
 #endif // BUILDING_SHOP_HPP_INCLUDED

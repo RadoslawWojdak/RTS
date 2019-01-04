@@ -47,6 +47,8 @@ void Client_Engine::return_to_menu()
     units.clear();
     tankFactories.clear();
     infantryFactories.clear();
+    houses.clear();
+    deposits.clear();
     menu.init(window);
 }
 
