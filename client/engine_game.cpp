@@ -4,14 +4,19 @@
 #include "cursor.hpp"
 #include "infantry.hpp"
 #include "tank.hpp"
+#include "resources_manager.hpp"
 
 extern sf::RenderWindow window;
 extern Network_Data server;
+extern Resources_Manager resources_manager;
 
 Cursor cursor;
 
-void Client_Engine::init_game(const sf::RenderWindow& window)
+void Client_Engine::init_game()
 {
+    buildingShop = std::make_unique<cBuildingShop>(window);
+    keepingObjectSprite.setColor(sf::Color(255, 255, 255, 127));
+
     m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u, 15u);
 
     tankFactories.emplace_back(std::make_unique<Tank_Factory>(window, 512, 256));
@@ -45,23 +50,31 @@ void Client_Engine::game_receive_inputs()
         }
         case sf::Event::MouseButtonPressed:
         {
-            if (event.mouseButton.button == sf::Mouse::Left)
+            if (event.mouseButton.button == sf::Mouse::Left && !keep_building)
             {
                 is_marking = true;
-                for (auto& factory : tankFactories) {
-                    if (factory->is_marked()) {
-                        if (factory->get_shop_item_clicked(window) != TankType::TANK_NONE) {
-                            is_marking = false;
-                            break;
+
+                if (marked_building) {
+                    for (auto& factory : tankFactories) {
+                        if (factory->is_marked()) {
+                            if (factory->get_shop_item_clicked(window) != TankType::TANK_NONE) {
+                                is_marking = false;
+                                break;
+                            }
                         }
                     }
-                }
-                for (auto& factory : infantryFactories) {
-                    if (factory->is_marked()) {
-                        if (factory->get_shop_item_clicked(window) != InfantryType::INFANTRY_NONE) {
-                            is_marking = false;
-                            break;
+                    for (auto& factory : infantryFactories) {
+                        if (factory->is_marked()) {
+                            if (factory->get_shop_item_clicked(window) != InfantryType::INFANTRY_NONE) {
+                                is_marking = false;
+                                break;
+                            }
                         }
+                    }
+                } else {
+                    if (buildingShop->get_shop_item_clicked(window) != BuildingType::BUILDING_NONE) {
+                        is_marking = false;
+                        break;
                     }
                 }
 
@@ -78,21 +91,48 @@ void Client_Engine::game_receive_inputs()
             {
                 case sf::Mouse::Left:
                 {
-                    if (!is_marking) {
-                        for (auto& factory : tankFactories) {
-                            if (factory->is_marked()) {
-                                if (factory->get_shop_item_clicked(window) != TankType::TANK_NONE) {
-                                    start_creating(window, *factory);
-                                    break;
+                    if (!is_marking || keep_building) {
+                        if (marked_building) {
+                            for (auto& factory : tankFactories) {
+                                if (factory->is_marked()) {
+                                    if (factory->get_shop_item_clicked(window) != TankType::TANK_NONE) {
+                                        start_creating(*factory);
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        for (auto& factory : infantryFactories) {
-                            if (factory->is_marked()) {
-                                if (factory->get_shop_item_clicked(window) != InfantryType::INFANTRY_NONE) {
-                                    start_creating(window, *factory);
-                                    break;
+                            for (auto& factory : infantryFactories) {
+                                if (factory->is_marked()) {
+                                    if (factory->get_shop_item_clicked(window) != InfantryType::INFANTRY_NONE) {
+                                        start_creating(*factory);
+                                        break;
+                                    }
                                 }
+                            }
+                        } else {
+                            if (buildingShop->get_shop_item_clicked(window) != BuildingType::BUILDING_NONE) {
+                                if (buildingShop->get_shop_item_clicked(window) == buildingShop->get_current_building() &&
+                                    buildingShop->is_finished() &&
+                                    !keep_building) {
+
+                                    keep_building = true;
+                                } else {
+                                    start_creating(*buildingShop);
+                                }
+                            } else if (keep_building) {
+                                const auto POSITION = sf::Mouse::getPosition(window);
+                                switch (buildingShop->get_current_building()) {
+                                    case BUILDING_INFANTRY_FACTORY: {
+                                        infantryFactories.emplace_back(std::make_unique<Infantry_Factory>(window, sf::Vector2f(POSITION)));
+                                        break;
+                                    }
+                                    case BUILDING_TANK_FACTORY: {
+                                        tankFactories.emplace_back(std::make_unique<Tank_Factory>(window, sf::Vector2f(POSITION)));
+                                        break;
+                                    }
+                                }
+                                buildingShop->get_factory();
+                                keep_building = false;
                             }
                         }
                     } else {
@@ -166,6 +206,8 @@ void Client_Engine::game_logic()
 
 void Client_Engine::game_draw_frame()
 {
+    adjust_keeping_object();
+
     window.clear();
 
     for (auto& unit : units)
@@ -180,6 +222,13 @@ void Client_Engine::game_draw_frame()
     for (auto& factory : infantryFactories)
     {
         factory->display(window);
+    }
+
+    if (!marked_building) {
+        buildingShop->display(window);
+    }
+    if (keep_building) {
+        window.draw(keepingObjectSprite);
     }
 
     cursor.display_marked_rect(window);
@@ -213,6 +262,7 @@ void Client_Engine::mark_covered_objects(const sf::RectangleShape& rect)
             {
                 factory->mark();
                 marked_factories++;
+                marked_building = true;
             }
         }
         for (auto& factory : infantryFactories)
@@ -221,6 +271,7 @@ void Client_Engine::mark_covered_objects(const sf::RectangleShape& rect)
             {
                 factory->mark();
                 marked_factories++;
+                marked_building = true;
             }
         }
     }
@@ -232,6 +283,7 @@ void Client_Engine::mark_covered_objects(const sf::RectangleShape& rect)
 
 void Client_Engine::unmark_objects()
 {
+    marked_building = false;
     for (auto& unit : units)
     {
         unit->unmark();
@@ -265,14 +317,14 @@ void Client_Engine::move_units()
     }
 }
 
-void Client_Engine::start_creating(const sf::RenderWindow& window, Tank_Factory& factory)
+void Client_Engine::start_creating(Tank_Factory& factory)
 {
     if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
         const auto TANK_TYPE = factory.get_shop_item_clicked(window);
         const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2f(0,0)).get_price();
 
-        if (TANK_PRICE < m_game_stats->get_resources() && !factory.is_creating())
+        if (TANK_PRICE <= m_game_stats->get_resources() && !factory.is_creating())
         {
             factory.start_creating(TANK_TYPE);
             m_game_stats->subtract_resources(TANK_PRICE);
@@ -280,17 +332,54 @@ void Client_Engine::start_creating(const sf::RenderWindow& window, Tank_Factory&
     }
 }
 
-void Client_Engine::start_creating(const sf::RenderWindow& window, Infantry_Factory& factory)
+void Client_Engine::start_creating(Infantry_Factory& factory)
 {
     if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
         const auto INFANTRY_TYPE = factory.get_shop_item_clicked(window);
         const auto INFANTRY_PRICE = Infantry(INFANTRY_TYPE, 1, sf::Vector2f(0,0)).get_price();
 
-        if (INFANTRY_PRICE < m_game_stats->get_resources() && !factory.is_creating())
+        if (INFANTRY_PRICE <= m_game_stats->get_resources() && !factory.is_creating())
         {
             factory.start_creating(INFANTRY_TYPE);
             m_game_stats->subtract_resources(INFANTRY_PRICE);
         }
+    }
+}
+
+void Client_Engine::start_creating(cBuildingShop& shop)
+{
+    const auto BUILDING_TYPE = shop.get_shop_item_clicked(window);
+    unsigned int buildingPrice;
+    switch (BUILDING_TYPE) {
+        case BUILDING_INFANTRY_FACTORY: {
+            buildingPrice = Infantry_Factory(window, sf::Vector2f(0,0)).get_price();
+            break;
+        }
+        case BUILDING_TANK_FACTORY: {
+            buildingPrice = Tank_Factory(window, sf::Vector2f(0,0)).get_price();
+            break;
+        }
+    }
+
+    if (buildingPrice <= m_game_stats->get_resources() && !buildingShop->is_creating())
+    {
+        buildingShop->start_creating(window, BUILDING_TYPE);
+        m_game_stats->subtract_resources(buildingPrice);
+    }
+}
+
+void Client_Engine::adjust_keeping_object() {
+    const auto KEEPING_TEXTURE_ID = buildingShop->get_current_buidling_texture_id();
+    if (keep_building) {
+        if (KEEPING_TEXTURE_ID != -1) {
+            window.setMouseCursorVisible(false);
+            keepingObjectSprite.setTexture(resources_manager.get_texture(KEEPING_TEXTURE_ID));
+            keepingObjectSprite.setOrigin(keepingObjectSprite.getTextureRect().width / 2.0f,
+                                          keepingObjectSprite.getTextureRect().height / 2.0f);
+        }
+        keepingObjectSprite.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+    } else {
+        window.setMouseCursorVisible(true);
     }
 }

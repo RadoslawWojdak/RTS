@@ -73,6 +73,16 @@ void Factory::set_price(unsigned int price)
     m_price = price;
 }
 
+unsigned int Factory::get_creating_time() const
+{
+    return m_creating_time;
+}
+
+void Factory::set_creating_time(unsigned int time)
+{
+    m_creating_time = time;
+}
+
 unsigned short Factory::get_team() const
 {
     return m_team;

@@ -52,7 +52,8 @@ void Infantry::set_parameters(const InfantryType& type)
         set_range(20.0f);
         set_abilities(ABILITY_SHOOTING);
         set_price(30u);
-        set_creating_time(0'500u);
+        set_creating_time(1'000u);
+        break;
     }
     case INFANTRY_B:
     {
@@ -66,7 +67,8 @@ void Infantry::set_parameters(const InfantryType& type)
         set_range(20.0f);
         set_abilities(ABILITY_SHOOTING);
         set_price(50u);
-        set_creating_time(1'000u);
+        set_creating_time(3'000u);
+        break;
     }
     case INFANTRY_C:
     {
@@ -77,7 +79,8 @@ void Infantry::set_parameters(const InfantryType& type)
         set_range(20.0f);
         set_abilities(CAPTURE_BUILDING);
         set_price(150u);
-        set_creating_time(3'500u);
+        set_creating_time(12'500u);
+        break;
     }
     }
 }

@@ -7,6 +7,9 @@ extern Resources_Manager resources_manager;
 Tank_Factory::Tank_Factory(const sf::RenderWindow& window, const sf::Vector2f& pos)
     : Graphical_Factory(resources_manager.get_texture(12), pos)
 {
+    set_creating_time(45'000u);
+    set_price(3000);
+
     finished_time_rect = sf::RectangleShape(sf::Vector2f(16, 32));
     finished_time_rect.setOrigin(finished_time_rect.getGlobalBounds().width / 2, 0.0f);
     finished_time_rect.setPosition(pos.x, pos.y - get_sprite().getOrigin().y - finished_time_rect.getOrigin().y - 8);

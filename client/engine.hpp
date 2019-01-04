@@ -2,6 +2,7 @@
 #define ENGINE_HPP_INCLUDED
 
 #include "../common/network_player.hpp"
+#include "building_shop.hpp"
 #include "graphical_unit.hpp"
 #include "graphical_statistics.hpp"
 #include "graphical_factory.hpp"
@@ -23,13 +24,17 @@ class Client_Engine
     sf::Clock clock;//8
     sf::Time time;//8
     std::unique_ptr<Graphical_Statistics> m_game_stats;
+    std::unique_ptr<cBuildingShop> buildingShop;
+    sf::Sprite keepingObjectSprite;
     bool menu_loop = true;//1
     bool lobby_loop = false;//1
     bool game_loop = false;//1
+    bool marked_building = false;
+    bool keep_building = false;
 
 public:
     void init();
-    void init_game(const sf::RenderWindow& window);
+    void init_game();
 
     void setup_window(bool fullscreen);
     void return_to_menu();
@@ -65,8 +70,11 @@ private:
     void point_destination(const sf::Vector2i& target);
     void move_units();
 
-    void start_creating(const sf::RenderWindow& window, Tank_Factory& factory);
-    void start_creating(const sf::RenderWindow& window, Infantry_Factory& factory);
+    void start_creating(Tank_Factory& factory);
+    void start_creating(Infantry_Factory& factory);
+    void start_creating(cBuildingShop& shop);
+
+    void adjust_keeping_object();
 };
 
 #endif // ENGINE_HPP_INCLUDED

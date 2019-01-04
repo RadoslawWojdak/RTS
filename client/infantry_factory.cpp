@@ -7,6 +7,9 @@ extern Resources_Manager resources_manager;
 Infantry_Factory::Infantry_Factory(const sf::RenderWindow& window, const sf::Vector2f& pos)
     : Graphical_Factory(resources_manager.get_texture(20), pos)
 {
+    set_creating_time(15'000u);
+    set_price(1000);
+
     finished_time_rect = sf::RectangleShape(sf::Vector2f(16, 32));
     finished_time_rect.setOrigin(finished_time_rect.getGlobalBounds().width / 2, 0.0f);
     finished_time_rect.setPosition(pos.x, pos.y - get_sprite().getOrigin().y - finished_time_rect.getOrigin().y - 8);
@@ -21,7 +24,7 @@ Infantry_Factory::Infantry_Factory(const sf::RenderWindow& window, const sf::Vec
     shop_textures.push_back(&resources_manager.get_texture(17));
     shop_textures.push_back(&resources_manager.get_texture(18));
     shop_textures.push_back(&resources_manager.get_texture(19));
-    m_shopping_menu = std::make_unique<cShoppingMenu>(window, resources_manager.get_texture(17), shop_textures);
+    m_shopping_menu = std::make_unique<cShoppingMenu>(window, resources_manager.get_texture(15), shop_textures);
 }
 Infantry_Factory::Infantry_Factory(const sf::RenderWindow& window, float x, float y)
     : Infantry_Factory(window, sf::Vector2f(x, y))
@@ -39,12 +42,12 @@ void Infantry_Factory::start_creating(const InfantryType& unit_type)
     m_creating_time_clock = sf::Clock();
     m_is_creating = true;
 }
-
+#include <iostream>
 unsigned int Infantry_Factory::get_creating_time()
 {
     const int DURATION = m_creating_time_clock.getElapsedTime().asMilliseconds();
     const float PERCENTAGE_OF_COMPLETION = static_cast<float>(DURATION) / get_total_time();
-
+std::cerr << get_total_time() << "\n";
     finished_time_rect.setSize(sf::Vector2f(total_time_rect.getGlobalBounds().width,
                                             -total_time_rect.getGlobalBounds().height * PERCENTAGE_OF_COMPLETION));
 
@@ -87,7 +90,7 @@ void Infantry_Factory::display(sf::RenderWindow& window) const
         window.draw(finished_time_rect);
     }
 
-        if (is_marked()) {
+    if (is_marked()) {
         m_shopping_menu->display(window);
     }
 }
