@@ -1,14 +1,14 @@
 #include "graphical_unit.hpp"
 #include <math.h>
 
-Graphical_Unit::Graphical_Unit(const sf::Texture& texture, const sf::Vector2f& pos)
+Graphical_Unit::Graphical_Unit(const sf::Texture& texture, const sf::Vector2u& posOnGrid)
 {
     m_sprite.setTexture(texture);
     m_sprite.setOrigin(
         m_sprite.getGlobalBounds().width / 2,
         m_sprite.getGlobalBounds().height / 2
     );
-    m_sprite.setPosition(pos);
+    m_sprite.setPosition(posOnGrid.x * 32.0f + 16.0f, posOnGrid.y * 32.0f + 16.0f);
     set_rotation_rad(0.0f);
 
     m_mark_rect = sf::RectangleShape(sf::Vector2f(m_sprite.getGlobalBounds().width, m_sprite.getGlobalBounds().height));
@@ -19,20 +19,28 @@ Graphical_Unit::Graphical_Unit(const sf::Texture& texture, const sf::Vector2f& p
 
     adjust_mark_position();
 
+    time_to_dig = 60;
+
     unmark();
 }
-Graphical_Unit::Graphical_Unit(const sf::Texture& texture, float x, float y)
-    : Graphical_Unit(texture, sf::Vector2f(x, y)) {}
+Graphical_Unit::Graphical_Unit(const sf::Texture& texture, uint x, uint y)
+    : Graphical_Unit(texture, sf::Vector2u(x, y)) {}
 
-void Graphical_Unit::move()
+void Graphical_Unit::dig(cDeposit& deposit, unsigned int& resources) {
+    resources += deposit.dig();
+}
+
+void Graphical_Unit::move(std::deque<cDeposit>& deposits, unsigned int& resources)
 {
     if (has_target())
     {
+        time_to_dig = DIGGING_TIME;
+
         const sf::Vector2f POSITION = m_sprite.getPosition();
 
         //ROTATION
-        const float DISTANCE_X = get_target_x() - m_sprite.getPosition().x;
-        const float DISTANCE_Y = get_target_y() - m_sprite.getPosition().y;
+        const float DISTANCE_X = get_target_x() * 32 - m_sprite.getPosition().x + m_sprite.getTextureRect().width / 2.0f;
+        const float DISTANCE_Y = get_target_y() * 32 - m_sprite.getPosition().y + m_sprite.getTextureRect().height / 2.0f;
         const float UNIT_TARGET_RADIANS = atan2(DISTANCE_Y, DISTANCE_X);
         set_rotation_rad(UNIT_TARGET_RADIANS);
 
@@ -43,7 +51,6 @@ void Graphical_Unit::move()
         const float FRAMERATE = 60.0f;
         const float PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
 
-        const sf::Vector2f TARGET_POS = get_target();
         const sf::Vector2f MOVE(
             cos(get_rotation_rad()) * PX_PER_FRAME,
             sin(get_rotation_rad()) * PX_PER_FRAME
@@ -52,25 +59,67 @@ void Graphical_Unit::move()
         m_sprite.move(MOVE);
         adjust_mark_position();
 
-        //UNSET TARGET IF THE UNIT REACHED ITS DESTINATION
-        const sf::Vector2f NEW_POSITION = m_sprite.getPosition();
-
-        if (POSITION.x > target.x ^ NEW_POSITION.x > target.x)
+        if (std::fabs(DISTANCE_X) < 1 && std::fabs(DISTANCE_Y) < 1)
         {
             unset_target();
+        }
+    } else {
+        const auto IS_HARVESTING  = ((get_abilities() & HARVESTING) != 0);
+        if (IS_HARVESTING) {
+            time_to_dig--;
+            if (time_to_dig == 0) {
+                time_to_dig = DIGGING_TIME;
+                for (auto i = 0; i < deposits.size(); i++) {
+                    const unsigned int GRID_X = m_sprite.getPosition().x / 32;
+                    const unsigned int GRID_Y = m_sprite.getPosition().y / 32;
+                    const unsigned int DEPOSIT_GRID_X = deposits[i].get_sprite().getPosition().x / 32;
+                    const unsigned int DEPOSIT_GRID_Y = deposits[i].get_sprite().getPosition().y / 32;
+
+                    if (GRID_X == DEPOSIT_GRID_X && GRID_Y == DEPOSIT_GRID_Y) {
+                        dig(deposits[i], resources);
+                        if (deposits[i].is_empty()) {
+                            deposits.erase(deposits.begin() + i);
+                        }
+                        return;
+                    }
+                }
+
+                auto distance = 9999999.9f;
+                auto closest_deposit = -1;
+                for (auto i = 0; i < deposits.size(); i++) {
+                    const auto DEPOSIT_X = deposits[i].get_sprite().getPosition().x;
+                    const auto DEPOSIT_Y = deposits[i].get_sprite().getPosition().y;
+                    const auto DISTANCE_X = std::fabs(DEPOSIT_X - m_sprite.getPosition().x + m_sprite.getTextureRect().width / 2.0f);
+                    const auto DISTANCE_Y = std::fabs(DEPOSIT_Y - m_sprite.getPosition().y + m_sprite.getTextureRect().height / 2.0f);
+                    const auto DISTANCE = std::sqrt(std::pow(DISTANCE_X, 2) + std::pow(DISTANCE_Y, 2));
+
+                    if (DISTANCE < distance) {
+                        distance = DISTANCE;
+                        closest_deposit = i;
+                    }
+                }
+                time_to_dig = DIGGING_TIME;
+
+                if (closest_deposit != -1) {
+                    const auto DEPOSIT_X = static_cast<unsigned int>(deposits[closest_deposit].get_sprite().getPosition().x / 32);
+                    const auto DEPOSIT_Y = static_cast<unsigned int>(deposits[closest_deposit].get_sprite().getPosition().y / 32);
+
+                    set_target(sf::Vector2u(DEPOSIT_X, DEPOSIT_Y));
+                }
+            }
         }
     }
 }
 
-sf::Vector2f Graphical_Unit::get_target() const
+sf::Vector2u Graphical_Unit::get_target() const
 {
-    return sf::Vector2f(get_target_x(), get_target_y());
+    return sf::Vector2u(get_target_x(), get_target_y());
 }
 
-void Graphical_Unit::set_target(const sf::Vector2f& pos)
+void Graphical_Unit::set_target(const sf::Vector2u& posOnGrid)
 {
-    Unit::set_target(pos.x, pos.y);
-    target = pos;
+    Unit::set_target(posOnGrid.x, posOnGrid.y);
+    target = posOnGrid;
 }
 
 const sf::Texture* Graphical_Unit::get_texture() const

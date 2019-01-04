@@ -32,7 +32,6 @@ cBuildingShop::cBuildingShop(const sf::RenderWindow& window) {
 
 void cBuildingShop::start_creating(const sf::RenderWindow& window, const BuildingType& building_type) {
     const auto RECT_SIZE  = resources_manager.get_texture(14).getSize();
-    m_current_building = building_type;
     
     switch (building_type) {
         case BUILDING_INFANTRY_FACTORY: {
@@ -49,8 +48,10 @@ void cBuildingShop::start_creating(const sf::RenderWindow& window, const Buildin
             total_time_rect.setPosition(finished_time_rect.getPosition());
             break;
         }
+        case BUILDING_NONE: { return; }
     }
 
+    m_current_building = building_type;
     m_creating_time_clock = sf::Clock();
     m_is_creating = true;
 }

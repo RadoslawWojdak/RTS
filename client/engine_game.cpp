@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include "engine.hpp"
 #include "network_data.hpp"
 #include "cursor.hpp"
@@ -20,12 +20,35 @@ void Client_Engine::init_game()
     m_game_stats = std::make_unique<Graphical_Statistics>(window, 5000u, 15u);
 
     tankFactories.emplace_back(std::make_unique<Tank_Factory>(window, 512, 256));
-    infantryFactories.emplace_back(std::make_unique<Infantry_Factory>(window, 608, 256));
+    infantryFactories.emplace_back(std::make_unique<Infantry_Factory>(window, 624, 256));
 
-    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 256));
-    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 256, 288));
-    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 288));
-    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 288, 256));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 8, 8));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 8, 9));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_A, 1, 9, 9));
+    units.emplace_back(std::make_unique<Tank>(TankType::TANK_SCRAPER, 1, 9, 8));
+
+    deposits.emplace_back(10, 11, 300);
+    deposits.emplace_back(11, 11, 700);
+    deposits.emplace_back(12, 11, 1100);
+    deposits.emplace_back(13, 11, 700);
+    deposits.emplace_back(14, 11, 700);
+    deposits.emplace_back(15, 11, 300);
+
+    deposits.emplace_back(24, 16, 300);
+    deposits.emplace_back(24, 15, 300);
+    deposits.emplace_back(24, 14, 300);
+    deposits.emplace_back(24, 13, 300);
+    deposits.emplace_back(23, 16, 300);
+    deposits.emplace_back(23, 15, 700);
+    deposits.emplace_back(23, 14, 1100);
+    deposits.emplace_back(22, 17, 300);
+    deposits.emplace_back(22, 16, 700);
+    deposits.emplace_back(22, 15, 700);
+    deposits.emplace_back(22, 14, 300);
+    deposits.emplace_back(21, 18, 300);
+    deposits.emplace_back(21, 17, 700);
+    deposits.emplace_back(21, 16, 300);
+    deposits.emplace_back(20, 18, 300);
 
     m_game_stats->increase_current_units_number(4u);
 }
@@ -130,6 +153,7 @@ void Client_Engine::game_receive_inputs()
                                         tankFactories.emplace_back(std::make_unique<Tank_Factory>(window, sf::Vector2f(POSITION)));
                                         break;
                                     }
+                                    case BUILDING_NONE: { break; }
                                 }
                                 buildingShop->get_factory();
                                 keep_building = false;
@@ -143,8 +167,8 @@ void Client_Engine::game_receive_inputs()
                 }
                 case sf::Mouse::Right:
                 {
-                    sf::Vector2i pos_on_grid(((sf::Mouse::getPosition(window).x + 16) / 32) * 32,
-                                             ((sf::Mouse::getPosition(window).y + 16) / 32) * 32);
+                    sf::Vector2u pos_on_grid(((sf::Mouse::getPosition(window).x) / 32),
+                                             ((sf::Mouse::getPosition(window).y) / 32));
                     point_destination(pos_on_grid);
 
                     break;
@@ -210,17 +234,18 @@ void Client_Engine::game_draw_frame()
 
     window.clear();
 
-    for (auto& unit : units)
-    {
+    for (auto& deposit : deposits) {
+        deposit.display(window);
+    }
+
+    for (auto& unit : units) {
         unit->display(window);
     }
 
-    for (auto& factory : tankFactories)
-    {
+    for (auto& factory : tankFactories) {
         factory->display(window);
     }
-    for (auto& factory : infantryFactories)
-    {
+    for (auto& factory : infantryFactories) {
         factory->display(window);
     }
 
@@ -298,13 +323,13 @@ void Client_Engine::unmark_objects()
     }
 }
 
-void Client_Engine::point_destination(const sf::Vector2i& target)
+void Client_Engine::point_destination(const sf::Vector2u& target)
 {
     for (auto& unit : units)
     {
         if (unit->is_marked())
         {
-            unit->set_target(sf::Vector2f(target));
+            unit->set_target(target);
         }
     }
 }
@@ -313,7 +338,10 @@ void Client_Engine::move_units()
 {
     for (auto& unit : units)
     {
-        unit->move();
+        unsigned int extra_resources = 0;
+
+        unit->move(deposits, extra_resources);
+        m_game_stats->add_resources(extra_resources);
     }
 }
 
@@ -322,7 +350,7 @@ void Client_Engine::start_creating(Tank_Factory& factory)
     if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
         const auto TANK_TYPE = factory.get_shop_item_clicked(window);
-        const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2f(0,0)).get_price();
+        const auto TANK_PRICE = Tank(TANK_TYPE, 1, sf::Vector2u(0,0)).get_price();
 
         if (TANK_PRICE <= m_game_stats->get_resources() && !factory.is_creating())
         {
@@ -337,7 +365,7 @@ void Client_Engine::start_creating(Infantry_Factory& factory)
     if (m_game_stats->get_max_units_capacity() > m_game_stats->get_current_units_number())
     {
         const auto INFANTRY_TYPE = factory.get_shop_item_clicked(window);
-        const auto INFANTRY_PRICE = Infantry(INFANTRY_TYPE, 1, sf::Vector2f(0,0)).get_price();
+        const auto INFANTRY_PRICE = Infantry(INFANTRY_TYPE, 1, sf::Vector2u(0,0)).get_price();
 
         if (INFANTRY_PRICE <= m_game_stats->get_resources() && !factory.is_creating())
         {
@@ -360,6 +388,7 @@ void Client_Engine::start_creating(cBuildingShop& shop)
             buildingPrice = Tank_Factory(window, sf::Vector2f(0,0)).get_price();
             break;
         }
+        case BUILDING_NONE: { break; }
     }
 
     if (buildingPrice <= m_game_stats->get_resources() && !buildingShop->is_creating())

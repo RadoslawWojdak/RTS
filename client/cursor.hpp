@@ -1,7 +1,7 @@
 #ifndef CURSOR_HPP_INCLUDED
 #define CURSOR_HPP_INCLUDED
 
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 
 class Cursor
 {

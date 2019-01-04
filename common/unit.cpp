@@ -128,17 +128,17 @@ void Unit::set_range(float range)
         m_range = 0.0f;
 }
 
-float Unit::get_target_x() const
+uint Unit::get_target_x() const
 {
     return m_target_x;
 }
 
-float Unit::get_target_y() const
+uint Unit::get_target_y() const
 {
     return m_target_y;
 }
 
-void Unit::set_target(float x, float y)
+void Unit::set_target(uint x, uint y)
 {
     m_target_x = x;
     if(m_target_x < 0.0f)

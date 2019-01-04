@@ -34,20 +34,20 @@ Infantry_Factory::Infantry_Factory(const sf::RenderWindow& window, float x, floa
 
 void Infantry_Factory::start_creating(const InfantryType& unit_type)
 {
-    const auto INFANTRY_POSITION = sf::Vector2f(get_sprite().getPosition().x,
-                                            get_sprite().getPosition().y + get_sprite().getOrigin().y + 32);
+    const auto INFANTRY_POSITION = sf::Vector2u(get_sprite().getPosition().x / 32,
+                                                get_sprite().getPosition().y / 32 + 1);
 
     m_created_infantry = std::make_unique<Infantry>(unit_type, get_team(), INFANTRY_POSITION);
 
     m_creating_time_clock = sf::Clock();
     m_is_creating = true;
 }
-#include <iostream>
+
 unsigned int Infantry_Factory::get_creating_time()
 {
     const int DURATION = m_creating_time_clock.getElapsedTime().asMilliseconds();
     const float PERCENTAGE_OF_COMPLETION = static_cast<float>(DURATION) / get_total_time();
-std::cerr << get_total_time() << "\n";
+
     finished_time_rect.setSize(sf::Vector2f(total_time_rect.getGlobalBounds().width,
                                             -total_time_rect.getGlobalBounds().height * PERCENTAGE_OF_COMPLETION));
 

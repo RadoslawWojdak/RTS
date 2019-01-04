@@ -3,6 +3,7 @@
 
 #include "../common/network_player.hpp"
 #include "building_shop.hpp"
+#include "deposit.hpp"
 #include "graphical_unit.hpp"
 #include "graphical_statistics.hpp"
 #include "graphical_factory.hpp"
@@ -17,6 +18,7 @@ class Client_Engine
     std::deque <std::unique_ptr <Tank_Factory> > tankFactories;
     std::deque <std::unique_ptr <Infantry_Factory> > infantryFactories;
     std::deque <std::unique_ptr <Graphical_Unit> > units;
+    std::deque <cDeposit> deposits;
     std::deque <Network_Player> players;//80
     sf::Packet packet_to_send;//56
     sf::Packet received_packet;//56
@@ -67,7 +69,7 @@ private:
 
     void mark_covered_objects(const sf::RectangleShape& rect);
     void unmark_objects();
-    void point_destination(const sf::Vector2i& target);
+    void point_destination(const sf::Vector2u& target);
     void move_units();
 
     void start_creating(Tank_Factory& factory);

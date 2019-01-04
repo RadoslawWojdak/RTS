@@ -1,7 +1,7 @@
 #ifndef GRAPHICAL_STATISTICS
 #define GRAPHICAL_STATISTICS
 
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include "statistics_manager.hpp"
 
 class Graphical_Statistics : public Statistics_Manager

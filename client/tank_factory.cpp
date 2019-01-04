@@ -23,6 +23,7 @@ Tank_Factory::Tank_Factory(const sf::RenderWindow& window, const sf::Vector2f& p
     std::vector<const sf::Texture*> shop_textures;
     shop_textures.push_back(&resources_manager.get_texture(1));
     shop_textures.push_back(&resources_manager.get_texture(16));
+    shop_textures.push_back(&resources_manager.get_texture(22));
     m_shopping_menu = std::make_unique<cShoppingMenu>(window, resources_manager.get_texture(15), shop_textures);
 }
 Tank_Factory::Tank_Factory(const sf::RenderWindow& window, float x, float y)
@@ -33,8 +34,8 @@ Tank_Factory::Tank_Factory(const sf::RenderWindow& window, float x, float y)
 
 void Tank_Factory::start_creating(const TankType& unit_type)
 {
-    const auto TANK_POSITION = sf::Vector2f(get_sprite().getPosition().x,
-                                            get_sprite().getPosition().y + get_sprite().getOrigin().y + 32);
+    const auto TANK_POSITION = sf::Vector2u(get_sprite().getPosition().x / 32,
+                                            get_sprite().getPosition().y / 32 + 1);
 
     m_created_tank = std::make_unique<Tank>(unit_type, get_team(), TANK_POSITION);
 

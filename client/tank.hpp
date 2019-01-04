@@ -8,14 +8,15 @@ enum TankType
 {
     TANK_NONE = -1,
     TANK_A = 0,
-    TANK_B
+    TANK_B,
+    TANK_SCRAPER
 };
 
 class Tank : public Graphical_Unit
 {
 public:
-    Tank(const TankType& type, ushort team, const sf::Vector2f& pos);
-    Tank(const TankType& type, ushort team, float x, float y);
+    Tank(const TankType& type, ushort team, const sf::Vector2u& pos);
+    Tank(const TankType& type, ushort team, uint x, uint y);
 
     void shot();
 

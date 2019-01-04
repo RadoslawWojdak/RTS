@@ -1,7 +1,7 @@
 #ifndef SHOPPING_MENU_HPP_INCLUDED
 #define SHOPPING_MENU_HPP_INCLUDED
 
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include <vector>
 
 class cShoppingMenu {

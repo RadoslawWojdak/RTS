@@ -32,8 +32,8 @@ class Unit
     float m_speed;//km/h
     float m_shot_frequency;//shots per second
     float m_range;//meters
-    float m_target_x;
-    float m_target_y;
+    uint m_target_x;
+    uint m_target_y;
     uint m_abilities;
     uint m_price;
     uint m_creating_time;//ms
@@ -54,9 +54,9 @@ public:
     float get_speed() const;
     float get_shot_frequency() const;
     float get_range() const;
-    float get_target_x() const;
-    float get_target_y() const;
-    void set_target(float x, float y);
+    uint get_target_x() const;
+    uint get_target_y() const;
+    void set_target(uint x, uint y);
     void unset_target();
     bool has_target() const;
     uint get_abilities() const;

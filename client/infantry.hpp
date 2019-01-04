@@ -15,8 +15,8 @@ enum InfantryType
 class Infantry : public Graphical_Unit
 {
 public:
-    Infantry(const InfantryType& type, ushort team, const sf::Vector2f& pos);
-    Infantry(const InfantryType& type, ushort team, float x, float y);
+    Infantry(const InfantryType& type, ushort team, const sf::Vector2u& pos);
+    Infantry(const InfantryType& type, ushort team, uint x, uint y);
 
     void shot();
 

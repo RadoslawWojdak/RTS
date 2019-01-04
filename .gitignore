@@ -1,0 +1,7 @@
+# Environment files
+.vscode/
+
+# Execute files
+bin/
+*.out
+*.exe

@@ -3,7 +3,7 @@
 
 extern Resources_Manager resources_manager;
 
-Infantry::Infantry(const InfantryType& type, ushort team, const sf::Vector2f& pos)
+Infantry::Infantry(const InfantryType& type, ushort team, const sf::Vector2u& pos)
     : Graphical_Unit(get_texture(type), pos)
 {
     set_unit_type(UNIT_TANK);
@@ -12,8 +12,8 @@ Infantry::Infantry(const InfantryType& type, ushort team, const sf::Vector2f& po
 
     set_hp(get_max_hp());
 }
-Infantry::Infantry(const InfantryType& type, ushort team, float x, float y)
-    : Infantry(type, team, sf::Vector2f(x, y)) {}
+Infantry::Infantry(const InfantryType& type, ushort team, uint x, uint y)
+    : Infantry(type, team, sf::Vector2u(x, y)) {}
 
 void Infantry::shot()
 {
@@ -82,5 +82,6 @@ void Infantry::set_parameters(const InfantryType& type)
         set_creating_time(12'500u);
         break;
     }
+    case INFANTRY_NONE: { break; }
     }
 }

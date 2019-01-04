@@ -2,7 +2,7 @@
 #define TANK_FACTORY_HPP_INCLUDED
 
 #include <memory>
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include "shopping_menu.hpp"
 #include "graphical_factory.hpp"
 #include "tank.hpp"
